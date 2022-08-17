@@ -5,136 +5,9 @@ import Webcam from 'react-webcam';
 // const ort = require('onnxruntime-web');
 /*global ort */
 
-const vocab = ['228 Memorial Park',
-'Alcatraz Federal Penitentiary',
-'Alcatraz Island',
-'Almaden Quicksilver County Park',
-'Altamont Pass Wind Farm',
-'Alum Rock Park',
-'Angel Island',
-'Aquarium of the Bay',
-'Ardenwood Historic Farm',
-'Arizona Cactus Garden',
-'Año Nuevo State Park',
-'Bayview Park (San Francisco)',
-'Beringer Vineyards',
-'Berkeley Square',
-'Big Basin Redwoods State Park',
-'Black Diamond Mines Regional Preserve',
-'Broadway',
-'Butano State Park',
-'CEFCU Stadium',
-'California Automobile Museum',
-'California Memorial Stadium',
-'California State Capitol',
-'California State Railroad Museum',
-'Carlin Canyon',
-'Casa de Estudillo',
-'Castello di Amorosa',
-'Cathedral Building',
-'Central Park',
-'Coit Tower',
-'Computer History Museum',
-'Cow Palace',
-'Crissy Field',
-'Davis Dam',
-'Deep Cove',
-'Dragon Gate, San Francisco',
-'East Brother Island Light',
-'Exploratorium',
-'First Unitarian Church of Oakland',
-'Fort Mason',
-'Fort Ross',
-'Ghirardelli Square',
-'Glen Canyon Park',
-'Golden Gate Bridge',
-'Golden Gate National Cemetery',
-'Golden Gate Park',
-'Golden State Model Railroad Museum',
-'Googleplex',
-'Grand Lake',
-'Half Moon Bay State Beach',
-'Happy Valley',
-'Henry Cowell Redwoods State Park',
-'Kezar Stadium',
-'Lake Merced',
-'Lake Merritt',
-'Lake Washington',
-"Levi's Stadium",
-'Liberty Island',
-'Lloyd Lake',
-'Loch Lomond',
-'Marin County Civic Center',
-'Marin Headlands',
-'Milagra Ridge',
-'Miller Park',
-'Mission San Juan Bautista',
-'Monterey Bay',
-'Monticello',
-'Mori Point',
-'Moscone Center',
-'Mount Tamalpais',
-'Muir Woods National Monument',
-'Museum of Art and Digital Entertainment',
-'Musée Mécanique',
-'Napa Valley Wine Train',
-'Natural Bridges State Beach',
-'Oak Hill Memorial Park',
-'Oakland Aviation Museum',
-'Old Sacramento State Historic Park',
-'One Montgomery Tower',
-'Our Lady of Peace Shrine',
-'Pacific Coast Air Museum',
-'Pacific Park',
-"People's Park",
-'Pescadero State Beach',
-'Piedmont Park',
-'Pier 39 (San Francisco)',
-'Pigeon Point Lighthouse',
-'Point Reyes Lighthouse',
-'Port of Oakland',
-'Port of San Francisco',
-'Presidio of San Francisco',
-'Quarry Lakes Regional Recreation Area',
-'Redwood Valley Railway',
-'Ruth Bancroft Garden',
-'San Bruno Mountain',
-'San Francisco Bay',
-'San Francisco Botanical Garden',
-'San Francisco City Hall',
-'San Francisco Museum of Modern Art',
-'San Francisco National Cemetery',
-'San Francisco Railway Museum',
-'San Francisco–Oakland Bay Bridge',
-'San Jose Museum of Art',
-'San Mateo – Hayward Bridge',
-'Santa Cruz Beach Boardwalk',
-'Santa Cruz Breakwater Light',
-'Santa Cruz Mountains',
-'Santana Row',
-'Sather Tower',
-'Shoreline Park, Mountain View',
-'Skyline Park',
-'Sonoma Raceway',
-'South Beach',
-'Sterling Vineyards',
-'Sutro Tower',
-'The 42',
-'Tilden Regional Park',
-'Tower 42',
-'Tower Bridge',
-'Tower Hill',
-'Transamerica Pyramid',
-'Tribune Tower',
-'USS Hornet Museum',
-'University of California Botanical Garden',
-'University of California Museum of Paleontology',
-'University of California, Berkeley',
-'V. Sattui Winery',
-'Westfield Valley Fair',
-'Yerba Buena Island'];
+const vocab = ["bay-bridge", "castro", "coit-tower", "golden-gate-bridge", "port-of-oakland", "scribd-logo", "sutro-tower", "transamerica-pyramid"];
 
-const SQSZ = 256 // this square size is everywhere
+const SQSZ = 128 // this square size is everywhere
 
 const unclampAndTranspose201 = (bhwc, bchw) => {
   // 8-bit bhwc canvas ImageData -> float32 bchw
@@ -169,7 +42,7 @@ class App extends React.Component {
     this.handleOnnx();
   }
   async handleOnnx() {
-    const ortsession = await ort.InferenceSession.create('./landmarks-mnv3.onnx', {executionProviders: ['wasm']});
+    const ortsession = await ort.InferenceSession.create('./landmarks-eight-categories.onnx', {executionProviders: ['wasm']});
     this.setState({ ortsession })
   }
   handleWebcam() {
@@ -211,6 +84,9 @@ class App extends React.Component {
     const top_k_probs = new Float32Array([...inference_result]).sort().reverse().slice(0, top_k);
     const top_k_ids = top_k_probs.map(prob => inference_result.indexOf(prob));
     return <div className="App">
+      <div className="top">
+        BRYANT STREET IMAGING
+      </div>
       <div className="camerapicker">
         <select id="facingMode" onChange={e => this.setState({facingMode: e.target.value})} value={this.state.facingMode}>
           <option value="user">selfie</option>
@@ -245,8 +121,8 @@ class App extends React.Component {
       <div className='sans'>
         Here is some sans text as well
       </div>
-      <div class="carousel">{Array.from({length: 100}).map((e,i) => 
-        <a class="carouselitem" href="https://www.scribd.com/document/38880370">
+      <div class="carousel">{Array.from({length: 20}).map((e,i) => 
+        <a class="carouselitem" href="https://www.scribd.com/document/38880370" target="_blank">
           <img className='thumb' src="https://imgv2-1-f.scribdassets.com/img/document/38880370/149x198/499a77aa62/0?v=1"/>
           <div className="title sans jumbo">Chinchilla Facts: 10 Facts You Would Never Guess about Chinchillas</div>
           <div className="author sans">{i} {i} Jessica Harrison the Greatest Author she is so cool</div>

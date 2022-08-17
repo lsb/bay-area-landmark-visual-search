@@ -160,6 +160,7 @@ class App extends React.Component {
       timing: "",
       bchw: Float32Array.from({length: SQSZ * SQSZ * 3}),
       facingMode: "environment",
+      inferenceToggle: true,
     };
     this.webcamref = React.createRef();
   }
@@ -168,7 +169,7 @@ class App extends React.Component {
     this.handleOnnx();
   }
   async handleOnnx() {
-    const ortsession = await ort.InferenceSession.create('./landmarks-mnv3.onnx');
+    const ortsession = await ort.InferenceSession.create('./landmarks-mnv3.onnx', {executionProviders: ['wasm']});
     this.setState({ ortsession })
   }
   handleWebcam() {
@@ -190,16 +191,18 @@ class App extends React.Component {
     }
   }
   async ingestPicture(imagedata) {
-    const startDate = Date.now();
-    const {bchw, ortsession} = this.state;
-    unclampAndTranspose201(imagedata, bchw);
-    const xposeDate = Date.now();
-    const input = new ort.Tensor("float32", bchw, [1, 3, SQSZ, SQSZ]);
-    const {output} = await ortsession.run({input});
-    const inference_result = output.data;
-    const inferDate = Date.now();
-    const timing = `${inferDate - startDate}`;
-    this.setState({inference_result, timing});
+    const {inferenceToggle} = this.state;
+    if(inferenceToggle) {
+      const startDate = Date.now();
+      const {bchw, ortsession} = this.state;
+      unclampAndTranspose201(imagedata, bchw);
+      const input = new ort.Tensor("float32", bchw, [1, 3, SQSZ, SQSZ]);
+      const {output} = await ortsession.run({input});
+      const inference_result = output.data;
+      const inferDate = Date.now();
+      const timing = `${inferDate - startDate}`;
+      this.setState({inference_result, timing});
+    }
     requestAnimationFrame(() => this.handleWebcam());
   }
   render() {
@@ -208,14 +211,13 @@ class App extends React.Component {
     const top_k_probs = new Float32Array([...inference_result]).sort().reverse().slice(0, top_k);
     const top_k_ids = top_k_probs.map(prob => inference_result.indexOf(prob));
     return <div className="App">
-      <center>
-        via your&nbsp;
+      <div className="camerapicker">
         <select id="facingMode" onChange={e => this.setState({facingMode: e.target.value})} value={this.state.facingMode}>
           <option value="user">selfie</option>
           <option value="environment">photo</option>
           <option value=""></option>
-        </select>&nbsp;webcam
-      </center>
+        </select>
+      </div>
       <Webcam
         audio={false}
         height={videoConstraints.height}
@@ -223,8 +225,15 @@ class App extends React.Component {
         ref={this.webcamref}
         videoConstraints={{...videoConstraints, facingMode: this.state.facingMode}}
       />
+      <center>
+        <div className="inferenceToggle-container" onClick={() => this.setState({inferenceToggle: !this.state.inferenceToggle})}>
+          <span className="inferenceToggle sans">
+            {(this.state && this.state.inferenceToggle) ? "Browse" : "Keep Looking"}
+          </span> 
+        </div>
+      </center>
       <div className="millis">
-        {timing} ms: {this.state.ortsession === null ? " --- no session :(" : ""}
+        {timing} ms: {this.state.ortsession === undefined ? " --- no session :(" : ""}
         {JSON.stringify(top_k_probs.map(p => Math.floor(p * 10000)))}
         {JSON.stringify(top_k_ids)}
       </div>
@@ -233,6 +242,17 @@ class App extends React.Component {
           i => <div>{top_k_probs[i].toFixed(4)} @ {vocab[top_k_ids[i]]}</div>
         )
       }
+      <div className='sans'>
+        Here is some sans text as well
+      </div>
+      <div class="carousel">{Array.from({length: 100}).map((e,i) => 
+        <a class="carouselitem" href="https://www.scribd.com/document/38880370">
+          <img className='thumb' src="https://imgv2-1-f.scribdassets.com/img/document/38880370/149x198/499a77aa62/0?v=1"/>
+          <div className="title sans jumbo">Chinchilla Facts: 10 Facts You Would Never Guess about Chinchillas</div>
+          <div className="author sans">{i} {i} Jessica Harrison the Greatest Author she is so cool</div>
+        </a>
+      )}
+      </div>
     </div>
   }
 }

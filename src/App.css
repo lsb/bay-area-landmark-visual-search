@@ -1,5 +1,65 @@
 .App {
   text-align: center;
+  font-family: "Source Serif Pro";
+}
+
+.sans {
+  font-family: "Source Sans Pro";
+}
+
+.inferenceToggle-container {
+  padding: 1em;
+}
+
+.inferenceToggle {
+  background-color: #1e7b85;
+  padding: 1em;
+  margin: 1em;
+  border-radius: 1em;
+  color: white;
+}
+
+.camerapicker {
+  position: fixed;
+  top: 0;
+  right: 0;
+}
+
+.carousel {
+  display: block;
+  /* overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis; */
+  width: 100vw;
+}
+
+.carouselitem {
+  display: inline-block;
+  width: 24vw;
+  text-overflow: ellipsis;
+  margin-bottom: 1em; margin-top: 1em;
+}
+
+.carouselitem img.thumb {
+  width: 149px;
+  height: 198px;
+  filter: drop-shadow(0.5em .5em .25em #888)
+}
+
+.carouselitem .title {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.carouselitem .author {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.jumbo {
+  font-size: 125%;
 }
 
 .millis {
@@ -8,3 +68,6 @@
   bottom: 0;
   font-family: monospace;
 }
+
+@font-face{font-display:fallback;font-family:"Source Sans Pro";font-style:normal;font-weight:700;src:url(./source_sans_pro_600.latin.76017e81.woff2) format("woff2");unicode-range:u+00??,u+0131,u+0152-0153,u+02bb-02bc,u+02c6,u+02da,u+02dc,u+2000-206f,u+2074,u+20ac,u+2122,u+2191,u+2193,u+2212,u+2215,u+feff,u+fffd}
+@font-face{font-family:"Source Serif Pro";font-style:normal;font-weight:600;font-display:fallback;src:url(./source_serif_pro_semibold.latin.f74d6620.woff2) format("woff2");unicode-range:u+00??,u+0131,u+0152-0153,u+02bb-02bc,u+02c6,u+02da,u+02dc,u+2000-206f,u+2074,u+20ac,u+2122,u+2191,u+2193,u+2212,u+2215,u+feff,u+fffd}

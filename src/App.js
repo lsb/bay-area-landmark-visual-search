@@ -7,6 +7,7 @@ import Webcam from 'react-webcam';
 
 const vocab = ["bay-bridge", "castro", "coit-tower", "golden-gate-bridge", "port-of-oakland", "scribd-logo", "sutro-tower", "transamerica-pyramid"];
 
+
 const SQSZ = 128 // this square size is everywhere
 
 const unclampAndTranspose201 = (bhwc, bchw) => {
@@ -34,6 +35,7 @@ class App extends React.Component {
       bchw: Float32Array.from({length: SQSZ * SQSZ * 3}),
       facingMode: "environment",
       inferenceToggle: true,
+      nightmode: false,
     };
     this.webcamref = React.createRef();
   }
@@ -79,13 +81,21 @@ class App extends React.Component {
     requestAnimationFrame(() => this.handleWebcam());
   }
   render() {
+    // if(!this.state || !this.state.session) return "";
+    const searchResults = {
+      "golden-gate-bridge": [{"author": "lol", "title": "lol", "image_url": "https://example.com", "scribd_url": "https://example.com"}],
+      "sutro-tower": [{"author": "lol", "title": "lol", "image_url": "https://example.com", "scribd_url": "https://example.com"}],
+      "scribd-logo": [{"author": "lol", "title": "lol", "image_url": "https://example.com", "scribd_url": "https://example.com"}],
+    };
     const top_k = 5;
-    const {inference_result, timing} = this.state;
+    const {inference_result, timing, nightmode} = this.state;
     const top_k_probs = new Float32Array([...inference_result]).sort().reverse().slice(0, top_k);
     const top_k_ids = top_k_probs.map(prob => inference_result.indexOf(prob));
-    return <div className="App">
+    const top_search_result_string = vocab[top_k_ids[0]];
+    const search_result = searchResults[top_search_result_string] || [{"author": "lol", "title": "lol", "image_url": "https://example.com", "scribd_url": "https://example.com"}]
+    return <div className={"App " + (nightmode ? "nightmode" : "")}>
       <div className="top">
-        BRYANT STREET IMAGING
+        ⁕ BRYANT STREET IMAGING
       </div>
       <div className="camerapicker">
         <select id="facingMode" onChange={e => this.setState({facingMode: e.target.value})} value={this.state.facingMode}>
@@ -93,6 +103,7 @@ class App extends React.Component {
           <option value="environment">photo</option>
           <option value=""></option>
         </select>
+        <br/><button onClick={e => {this.setState({nightmode: !nightmode}); console.log("toggling night mode", nightmode)}}>{nightmode ? "day" : "night"}</button>
       </div>
       <Webcam
         audio={false}
@@ -118,16 +129,23 @@ class App extends React.Component {
           i => <div>{top_k_probs[i].toFixed(4)} @ {vocab[top_k_ids[i]]}</div>
         )
       }
-      <div className='sans'>
-        Here is some sans text as well
-      </div>
-      <div class="carousel">{Array.from({length: 20}).map((e,i) => 
-        <a class="carouselitem" href="https://www.scribd.com/document/38880370" target="_blank">
+      <div className="carousel">{Array.from({length: 20}).map((e,i) => 
+        <a className="carouselitem" href="https://www.scribd.com/document/38880370" target="_blank">
           <img className='thumb' src="https://imgv2-1-f.scribdassets.com/img/document/38880370/149x198/499a77aa62/0?v=1"/>
           <div className="title sans jumbo">Chinchilla Facts: 10 Facts You Would Never Guess about Chinchillas</div>
           <div className="author sans">{i} {i} Jessica Harrison the Greatest Author she is so cool</div>
         </a>
       )}
+      <div className='carousel'>
+        {search_result.map(
+          (e,i) => <a className='carouselitem' href={e.scribd_url} target="_blank">
+            <img className='thumb' src={e.image_url} />
+            <div className='title sans jumbo'>{e.title}</div>
+            <div className='author sans'>{e.author} </div>
+          </a>
+        )}
+      </div>
+
       </div>
     </div>
   }

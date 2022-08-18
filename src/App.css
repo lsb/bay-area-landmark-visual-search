@@ -9,8 +9,12 @@
   color: #ccc;
 }
 
+.logo {
+  font-family: "Raleway"; text-align: left; padding-top: 1em; position: fixed; top: 0; left: 0; padding-left: 2px;
+}
+
 .top {
-  font-family: "Raleway"; text-align: left; padding: 1em;
+  font-family: "Raleway"; text-align: left; padding: 1em; position: fixed; top: 0; left: 0;
 }
 
 .sans {

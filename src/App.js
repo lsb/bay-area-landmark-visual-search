@@ -48,6 +48,7 @@ class App extends React.Component {
       facingMode: "environment",
       inferenceToggle: true,
       nightmode: false,
+      viewinference: true,
     };
     this.webcamref = React.createRef();
   }
@@ -95,14 +96,14 @@ class App extends React.Component {
   render() {
     // if(!this.state || !this.state.session) return "";
     const top_k = 5;
-    const {inference_result, timing, nightmode, inferenceoverride} = this.state;
+    const {inference_result, timing, nightmode, inferenceoverride, viewinference} = this.state;
     const top_k_probs = new Float32Array([...inference_result]).sort().reverse().slice(0, top_k);
     const top_k_ids = top_k_probs.map(prob => inference_result.indexOf(prob));
     const top_search_result_string = inferenceoverride || vocab[top_k_ids[0]];
     const search_result = (nightmode ? nightSearchResults : morningSearchResults)[top_search_result_string];
     const filtered_search_result = search_result.filter(e => e.title.match(/^The Final Leap/) === null); // filter anything objectively harmful for a demo
-    return <div className={"App " + (nightmode ? "nightmode" : "")}>
-      <div className="logo">⁕</div><div className="top">BRYANT<br/>STREET<br/>IMAGING</div>
+    return <div className={"App" + (nightmode ? " nightmode" : "") + (viewinference ? "" : " noinference")}>
+      <div className="logo">⁕</div><div onClick={e => {this.setState({viewinference: !viewinference}) ; console.log({viewinference})} } className="top">BRYANT<br/>STREET<br/>IMAGING</div>
       <div className="camerapicker">
         <select id="facingMode" onChange={e => this.setState({facingMode: e.target.value})} value={this.state.facingMode}>
           <option value="user">selfie</option>
@@ -130,17 +131,19 @@ class App extends React.Component {
             {(this.state && this.state.inferenceToggle) ? "Browse" : "Keep Looking"}
           </span> 
         </div>
+        <div className="inference-container">
+          {
+            [...Array(top_k).keys()].map(
+              i => <div>{top_k_probs[i].toFixed(4)} @ {vocab[top_k_ids[i]]}</div>
+            )
+          }
+        </div>
       </center>
       <div className="millis">
         {timing} ms: {this.state.ortsession === undefined ? " --- no session :(" : ""}
         {JSON.stringify(top_k_probs.map(p => Math.floor(p * 10000)))}
         {JSON.stringify(top_k_ids)}
       </div>
-      {
-        [...Array(top_k).keys()].map(
-          i => <div>{top_k_probs[i].toFixed(4)} @ {vocab[top_k_ids[i]]}</div>
-        )
-      }
       <div className='carousel'>
         {filtered_search_result.map(
           (e,i) => <a className='carouselitem' href={e.scribd_url} target="_blank">

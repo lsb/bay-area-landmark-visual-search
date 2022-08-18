@@ -10,12 +10,15 @@
 }
 
 .logo {
-  font-family: "Raleway"; text-align: left; padding-top: 1em; position: absolute; top: 0; left: 0; padding-left: 2px;
+  font-family: "Raleway"; text-align: left; padding-top: 1em; position: absolute; top: 0; left: 0; padding-left: 2px; display: none;
 }
 
 .top {
-  font-family: "Raleway"; text-align: left; padding: 1em; position: absolute; top: 0; left: 0;
+  font-family: "Raleway"; text-align: left; padding: 1em; position: absolute; top: 0; left: 0; 
 }
+.top img { height: 24px ; width: 110px }
+
+h2 { text-align: left; padding-left: 1em}
 
 .sans {
   font-family: "Source Sans Pro";
